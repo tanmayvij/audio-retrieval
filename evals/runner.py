@@ -9,11 +9,13 @@ from pathlib import Path
 from uuid import UUID
 
 from evals.metrics import mean_recall, recall_at_k
+from evals.gates import MINIMUM_RECALL, TOLERANCE, gate_mode, validate_baseline
+from evals.unanswerable import analyze_scores, load_unanswerable_queries, semantic_score
 
 
 KS = (1, 3, 5)
 MODES = ("semantic", "hybrid")
-THRESHOLD = 0.80
+THRESHOLD = MINIMUM_RECALL
 
 
 def fingerprint(value: object) -> str:
@@ -81,11 +83,14 @@ def validate_labels(queries: list[dict], corpus: list[dict]) -> None:
                 raise ValueError(f"{query['id']}: labeled chunk {chunk_id} has no embedding.")
 
 
-def evaluate(queries: list[dict], corpus: list[dict], search: Callable, model: str) -> dict:
+def evaluate(queries: list[dict], corpus: list[dict], search: Callable, model: str,
+             *, baseline: dict | None = None, unanswerable: list[dict] | None = None) -> dict:
     validate_labels(queries, corpus)
     if not queries:
         raise ValueError("Cannot evaluate an empty query set.")
     report = {
+        "schema_version": 2,
+        "status": "success",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "embedding_model": model,
         "query_set_sha256": fingerprint(queries),
@@ -96,9 +101,13 @@ def evaluate(queries: list[dict], corpus: list[dict], search: Callable, model: s
         "query_count": len(queries),
         "chunk_count": len(corpus),
         "ks": list(KS),
-        "gate": {"k": 5, "minimum_mean_recall": THRESHOLD},
+        "gate": {"minimum_mean_recall": {"3": THRESHOLD, "5": THRESHOLD},
+                 "baseline_required": baseline is not None, "tolerance": TOLERANCE},
         "modes": {},
     }
+    if baseline is not None:
+        validate_baseline(baseline, report, {query["id"] for query in queries})
+    answerable_scores = []
     for mode in MODES:
         details = []
         for query in queries:
@@ -107,6 +116,10 @@ def evaluate(queries: list[dict], corpus: list[dict], search: Callable, model: s
             except Exception as error:
                 raise RuntimeError(f"Retrieval failed for {mode}, query {query['id']}") from error
             retrieved = [str(row["chunk_id"]) for row in results]
+            if mode == "semantic" and unanswerable is not None:
+                answerable_scores.append({"id": query["id"], "query": query["query"],
+                                          "score": semantic_score(results, query["id"]),
+                                          "retrieved_chunk_ids": retrieved})
             relevant = query["relevant_chunk_ids"]
             details.append({
                 "id": query["id"], "query": query["query"],
@@ -119,22 +132,82 @@ def evaluate(queries: list[dict], corpus: list[dict], search: Callable, model: s
             })
         means = {str(k): mean_recall([row["recall"][str(k)] for row in details]) for k in KS}
         report["modes"][mode] = {
-            "mean_recall": means, "passed": means["5"] >= THRESHOLD, "queries": details,
+            "mean_recall": means, "queries": details,
+            **gate_mode(means, details, baseline["modes"][mode] if baseline is not None else None),
+        }
+    if unanswerable is not None:
+        negative_scores = []
+        for query in unanswerable:
+            try:
+                results = search(query["query"], "semantic", limit=max(KS))
+            except Exception as error:
+                raise RuntimeError(f"Retrieval failed for semantic, query {query['id']}") from error
+            negative_scores.append({**query, "score": semantic_score(results, query["id"]),
+                                    "retrieved_chunk_ids": [str(row["chunk_id"]) for row in results]})
+        report["unanswerable"] = {
+            "query_set_sha256": fingerprint(unanswerable),
+            **analyze_scores(answerable_scores, negative_scores),
         }
     report["passed"] = all(mode["passed"] for mode in report["modes"].values())
+    report["status"] = "success" if report["passed"] else "failed"
     return report
 
 
 def write_json(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
+
+
+def run_evaluation(*, queries_path: Path, baseline_path: Path, unanswerable_path: Path,
+                   report_path: Path, corpus_loader: Callable, search: Callable, model: str) -> dict:
+    """Persist fresh run status even when setup, data validation, or retrieval fails."""
+    if report_path.resolve() in {p.resolve() for p in (queries_path, baseline_path, unanswerable_path)}:
+        raise ValueError("Report output must not overwrite evaluation inputs or the baseline.")
+    started = datetime.now(timezone.utc).isoformat()
+    write_json(report_path, {"schema_version": 2, "created_at": started,
+                             "status": "running", "passed": False})
+    try:
+        queries = load_queries(queries_path)
+        baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+        negatives = load_unanswerable_queries(unanswerable_path, {q["id"] for q in queries})
+        corpus = corpus_loader()
+        filenames = {row["filename"] for row in corpus}
+        if any(q.get("filename") not in filenames for q in negatives if q["category"] == "near_match"):
+            raise ValueError("Near-match source filename is missing from the corpus.")
+        report = evaluate(queries, corpus, search, model, baseline=baseline, unanswerable=negatives)
+    except Exception as error:
+        write_json(report_path, {"schema_version": 2, "created_at": started,
+                                 "status": "error", "passed": False,
+                                 "error": {"type": type(error).__name__, "message": str(error)}})
+        raise
+    write_json(report_path, report)
+    return report
 
 
 def format_summary(report: dict) -> str:
-    lines = ["Mode        Recall@1  Recall@3  Recall@5  Gate (@5 >= 0.80)"]
+    baseline_label = " + baseline" if report["gate"]["baseline_required"] else ""
+    lines = [f"Mode        Recall@1  Recall@3  Recall@5  Gates (@3/@5 >= 0.80{baseline_label})"]
     for mode, result in report["modes"].items():
         scores = "  ".join(f"{result['mean_recall'][str(k)]:8.3f}" for k in KS)
         lines.append(f"{mode:10}  {scores}  {'PASS' if result['passed'] else 'FAIL'}")
+        lines.append(f"  Zero-hit queries @3: {', '.join(result['zero_hit_queries_at_3']) or 'none'}")
+        if result["gate_reasons"]:
+            lines.append("  Failed gates: " + ", ".join(result["gate_reasons"]))
+        comparison = result["baseline_comparison"]
+        if comparison is not None:
+            lines.append(f"  Mean Recall@3 change: {comparison['mean_recall_at_3_delta']:+.3f}")
+            for row in comparison["query_changes"]:
+                if abs(row["delta"]) > TOLERANCE:
+                    lines.append(f"  {row['id']}: Recall@3 {row['baseline_recall_at_3']:.3f} -> {row['recall_at_3']:.3f}")
+    if "unanswerable" in report:
+        analysis = report["unanswerable"]
+        lines.append("Unanswerable score separation (exploratory; no selected cutoff or quality gate):")
+        distributions = {"answerable": analysis["answerable"]["distribution"],
+                         **analysis["unanswerable"]["distributions"]}
+        for name, stats in distributions.items():
+            lines.append(f"  {name}: n={stats['count']}, cosine min/median/max="
+                         f"{stats['min']:.3f}/{stats['median']:.3f}/{stats['max']:.3f}")
+        lines.append("  Threshold tradeoffs and per-query scores are in the JSON report.")
     return "\n".join(lines)
 
 

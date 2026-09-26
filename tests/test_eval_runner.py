@@ -93,7 +93,10 @@ def test_fingerprints_track_corpus_and_queries():
 
 def test_threshold_includes_exactly_eighty_percent():
     ids = [str(index) for index in range(5)]
-    queries = [{"id": "q", "query": "question", "relevant_chunk_ids": ids}]
+    queries = [{"id": f"q{item}", "query": f"question {item}", "relevant_chunk_ids": [item]} for item in ids]
     rows = [{"chunk_id": item, "text": item, "has_embedding": True} for item in ids]
-    report = evaluate(queries, rows, Mock(return_value=[{"chunk_id": item} for item in ids[:4]]), "test-model")
+    def search(query, mode, *, limit):
+        return [{"chunk_id": query.split()[-1]}] if query != "question 4" else []
+
+    report = evaluate(queries, rows, search, "test-model")
     assert report["passed"]

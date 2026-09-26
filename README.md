@@ -103,8 +103,20 @@ and word forms and avoiding matches inside larger words.
 ## Retrieval evaluations
 
 See [evals/README.md](evals/README.md) for labeling a fixed chunk corpus and running
-Recall@1, Recall@3, and Recall@5 evaluations for semantic and hybrid search.
-Run `python -m pytest` for lightweight tests.
-Live evaluations require labeled queries and an ingested database and run with
-`python -m pytest evals/ --run-evals -m eval -s`. Each mode must reach mean
-Recall@5 >= 0.80; detailed results are saved to `evals/reports/recall.json`.
+Recall@1, Recall@3, and Recall@5 evaluations for semantic and hybrid search,
+strict baseline regression checks, and unanswerable-query score analysis.
+
+Run these commands from the repository root:
+
+| Task | Command | Requirements / output |
+| --- | --- | --- |
+| Run lightweight tests, including six synthetic fault scenarios | `python -m pytest` | No database or model required; live evaluations are skipped. |
+| Generate a fault-detection coverage report | `python -m evals.faults` | No database or model required; writes `evals/reports/faults.json`. |
+| Export chunks for relevance labeling | `python -m evals.runner --export-catalog evals/catalog.json` | Requires `DATABASE_URL` and an ingested database; writes `evals/catalog.json`. |
+| Run live recall, regression, and unanswerable-query evaluations | `python -m pytest evals/ --run-evals -m eval -s` | Requires `DATABASE_URL`, an ingested database, the embedding model, labeled queries, and a matching baseline; writes `evals/reports/recall.json`. |
+
+Each mode must reach mean
+Recall@3 and Recall@5 >= 0.80, maintain baseline mean Recall@3, and introduce no
+new zero-hit queries at k=3. Detailed gate results and exploratory unanswerable
+score tradeoffs are saved to `evals/reports/recall.json`. Evaluation never updates
+the reviewed baseline or changes interactive search behavior.

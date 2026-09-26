@@ -1,0 +1,80 @@
+[
+  {
+    "id": "u01",
+    "query": "What is the orbital period of Neptune in Earth years?",
+    "category": "unrelated",
+    "rationale": "The complete six-recording catalog contains no discussion of planetary orbits or Neptune's orbital period."
+  },
+  {
+    "id": "u02",
+    "query": "Which ingredients and oven temperature are needed to bake a sourdough loaf?",
+    "category": "unrelated",
+    "rationale": "No passage in the catalog provides bread recipes, sourdough ingredients, or baking temperatures."
+  },
+  {
+    "id": "u03",
+    "query": "Who won the men's singles title at Wimbledon in 2019?",
+    "category": "unrelated",
+    "rationale": "None of the six recordings discusses Wimbledon results or tennis champions."
+  },
+  {
+    "id": "u04",
+    "query": "How does a leaf use chlorophyll during photosynthesis?",
+    "category": "unrelated",
+    "rationale": "The catalog covers business interviews and contains no explanation of chlorophyll or photosynthesis."
+  },
+  {
+    "id": "u05",
+    "query": "Which pharaoh commissioned the Great Pyramid of Giza?",
+    "category": "unrelated",
+    "rationale": "No catalog passage discusses Egyptian pharaohs or construction of the pyramids."
+  },
+  {
+    "id": "u06",
+    "query": "What is the standard tuning of the six strings on a guitar?",
+    "category": "unrelated",
+    "rationale": "No passage supplies musical instrument tuning or guitar string notes."
+  },
+  {
+    "id": "u07",
+    "query": "What exact dollar amount did Parsity raise in its latest friends-and-family fund?",
+    "category": "near_match",
+    "filename": "output_1.mp3",
+    "rationale": "The interview describes raising a friends-and-family fund but never states its total size. Acreage deal values and lease payment examples do not answer this question."
+  },
+  {
+    "id": "u08",
+    "query": "What monthly subscription price does IRA Logix charge each bank for its platform?",
+    "category": "near_match",
+    "filename": "output_2.mp3",
+    "rationale": "The catalog describes IRA Logix's infrastructure and target market but supplies no monthly platform subscription price."
+  },
+  {
+    "id": "u09",
+    "query": "What exact dollar price does Sequoia charge to install its electrical sensor on one trash compactor?",
+    "category": "near_match",
+    "filename": "output_3.mp3",
+    "rationale": "The interview explains the retrofit sensor and its economics, but gives no installation price per compactor."
+  },
+  {
+    "id": "u10",
+    "query": "What is the retail price in dollars of the Toasterpets cardboard cartoon studio kit?",
+    "category": "near_match",
+    "filename": "output_4.mp3",
+    "rationale": "The studio and app workflow are described without a retail price. Hundreds or thousands of dollars mentioned elsewhere refer to conventional video-making equipment, not the kit."
+  },
+  {
+    "id": "u11",
+    "query": "What interest rate did the bank charge COE on its initial inventory financing loan?",
+    "category": "near_match",
+    "filename": "output_5.mp3",
+    "rationale": "The interview discusses bank financing and revenue growth, but gives no loan interest rate. Growth percentages are not borrowing rates."
+  },
+  {
+    "id": "u12",
+    "query": "What exact fee did the Power Collective coach charge her first LinkedIn client?",
+    "category": "near_match",
+    "filename": "output_6.mp3",
+    "rationale": "The story identifies LinkedIn and the initial branding work, but never specifies the fee charged to that client."
+  }
+]

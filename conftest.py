@@ -7,6 +7,9 @@ def pytest_addoption(parser):
     parser.addoption("--run-evals", action="store_true", help="Run live retrieval evaluations")
     parser.addoption("--eval-queries", default="evals/queries.json", help="Labeled query JSON file")
     parser.addoption("--eval-report", default="evals/reports/recall.json", help="JSON report output")
+    parser.addoption("--eval-baseline", default="evals/baseline.json", help="Reviewed baseline JSON file")
+    parser.addoption("--eval-unanswerable-queries", default="evals/unanswerable_queries.json",
+                     help="Unanswerable query JSON file")
 
 
 def pytest_collection_modifyitems(config, items):
