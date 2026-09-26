@@ -1,6 +1,7 @@
 from collections.abc import Iterable
 
 from app.config import CHUNK_TARGET_WORDS
+from app.services.diarization import SpeakerTurn
 
 
 _OVERLAP_WORDS = 30
@@ -29,42 +30,103 @@ def _make_chunk(segments: list[dict]) -> dict:
         "start": segments[0]["start"],
         "end": segments[-1]["end"],
         "text": " ".join(segment["text"] for segment in segments),
+        "speaker": segments[0]["speaker"],
     }
 
 
-def chunk_segments(segments: Iterable[object]) -> list[dict]:
-    """Combine a Whisper segment iterable into timestamped text chunks.
+def _overlap_duration(
+    start: float, end: float, speaker_turn: SpeakerTurn
+) -> float:
+    return max(0.0, min(end, speaker_turn.end) - max(start, speaker_turn.start))
+
+
+def _distance(start: float, end: float, speaker_turn: SpeakerTurn) -> float:
+    if end < speaker_turn.start:
+        return speaker_turn.start - end
+    if start > speaker_turn.end:
+        return start - speaker_turn.end
+    return 0.0
+
+
+def _speaker_for_word(
+    start: float, end: float, speaker_turns: list[SpeakerTurn]
+) -> str:
+    overlaps = [
+        _overlap_duration(start, end, speaker_turn)
+        for speaker_turn in speaker_turns
+    ]
+    largest_overlap = max(overlaps)
+    if largest_overlap > 0:
+        return speaker_turns[overlaps.index(largest_overlap)].speaker
+
+    nearest_turn = min(
+        speaker_turns,
+        key=lambda speaker_turn: (
+            _distance(start, end, speaker_turn),
+            speaker_turn.start,
+        ),
+    )
+    return nearest_turn.speaker
+
+
+def _speaker_words(
+    segments: Iterable[object], speaker_turns: list[SpeakerTurn]
+) -> Iterable[dict]:
+    for whisper_segment in segments:
+        words = whisper_segment.words
+        if words is None:
+            raise ValueError("Whisper segments must include word timestamps.")
+
+        for whisper_word in words:
+            text = whisper_word.word.strip()
+            if not text:
+                continue
+
+            start = float(whisper_word.start)
+            end = float(whisper_word.end)
+            yield {
+                "start": start,
+                "end": end,
+                "text": text,
+                "word_count": _word_count(text),
+                "speaker": _speaker_for_word(start, end, speaker_turns),
+            }
+
+
+def chunk_segments(
+    segments: Iterable[object], speaker_turns: Iterable[SpeakerTurn]
+) -> list[dict]:
+    """Combine timestamped Whisper words into speaker-aware text chunks.
 
     ``faster_whisper`` returns a generator, so this function consumes it once.
-    Each output chunk contains its inclusive start time, end time, and text.
-    Chunks end at Whisper's existing segment boundaries after reaching
-    ``CHUNK_TARGET_WORDS``; a long pause also starts a new chunk. The final
-    Whisper segment(s) of a chunk are repeated as a small contextual overlap.
+    Each output chunk contains one speaker, its start and end time, and text.
+    Speaker changes and long pauses always start a new chunk. Chunks also end
+    after reaching ``CHUNK_TARGET_WORDS``; only same-speaker words are repeated
+    as a small contextual overlap after a size-based split.
     """
+    normalized_turns = sorted(
+        speaker_turns, key=lambda turn: (turn.start, turn.end)
+    )
+    if not normalized_turns:
+        raise ValueError("At least one speaker turn is required.")
+
     chunks: list[dict] = []
     current: list[dict] = []
     current_words = 0
     previous_end: float | None = None
 
-    for whisper_segment in segments:
-        text = whisper_segment.text.strip()
-        if not text:
-            continue
-
-        segment = {
-            "start": whisper_segment.start,
-            "end": whisper_segment.end,
-            "text": text,
-            "word_count": _word_count(text),
-        }
-
+    for segment in _speaker_words(segments, normalized_turns):
         has_pause = (
             previous_end is not None
             and segment["start"] - previous_end >= _PAUSE_BREAK_SECONDS
         )
-        if current and (current_words >= CHUNK_TARGET_WORDS or has_pause):
+        has_speaker_change = (
+            bool(current) and segment["speaker"] != current[-1]["speaker"]
+        )
+        reached_target = current_words >= CHUNK_TARGET_WORDS
+        if current and (reached_target or has_pause or has_speaker_change):
             chunks.append(_make_chunk(current))
-            if has_pause:
+            if has_pause or has_speaker_change:
                 current = []
                 current_words = 0
             else:

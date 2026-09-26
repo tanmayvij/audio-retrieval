@@ -15,9 +15,9 @@ def _get_model() -> SentenceTransformer:
 def embed_chunks(chunks: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
     """Return chunks enriched with normalized, JSON-serializable embeddings.
 
-    Each input chunk must include a non-empty ``text`` value. The input chunk
-    dictionaries are copied, so callers can keep their original transcript
-    metadata untouched.
+    Each input chunk must include non-empty ``text`` and ``speaker`` values.
+    The input chunk dictionaries are copied, so callers can keep their original
+    transcript metadata untouched.
     """
     if not chunks:
         return []
@@ -25,6 +25,8 @@ def embed_chunks(chunks: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
     texts = [chunk.get("text", "").strip() for chunk in chunks]
     if any(not text for text in texts):
         raise ValueError("Every chunk must contain non-empty text.")
+    if any(not chunk.get("speaker", "").strip() for chunk in chunks):
+        raise ValueError("Every chunk must contain a speaker.")
 
     vectors = _get_model().encode(
         texts,

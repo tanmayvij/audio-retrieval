@@ -28,6 +28,7 @@ def insert_chunks(
                 "start_seconds": chunk["start"],
                 "end_seconds": chunk["end"],
                 "text": chunk["text"],
+                "speaker": chunk["speaker"],
                 "embedding": chunk["embedding"],
             }
             for chunk in chunks

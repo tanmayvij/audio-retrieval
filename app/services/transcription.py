@@ -10,6 +10,11 @@ def generate_segments(audio_file):
         compute_type=WHISPER_COMPUTE
     )
     
-    segments, info = model.transcribe(audio_file, vad_filter=True, beam_size=5)
+    segments, _ = model.transcribe(
+        audio_file,
+        vad_filter=True,
+        beam_size=5,
+        word_timestamps=True,
+    )
     
     return segments

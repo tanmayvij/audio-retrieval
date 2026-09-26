@@ -43,4 +43,5 @@ class Chunk(Base):
     start_seconds: Mapped[float | None] = mapped_column(REAL)
     end_seconds: Mapped[float | None] = mapped_column(REAL)
     text: Mapped[str] = mapped_column(Text, nullable=False)
+    speaker: Mapped[str] = mapped_column(Text, nullable=False)
     embedding: Mapped[list[float] | None] = mapped_column(Vector(768))

@@ -4,7 +4,8 @@
 
 - Python 3.10 or newer
 - `pip`
-- `ffmpeg` (optional). The [`faster-whisper`](https://github.com/SYSTRAN/faster-whisper) Github repository mentions that it uses [`PyAV`](https://github.com/PyAV-Org/PyAV) to perform audio decoding, which bundles ffmpeg.
+- `ffmpeg`. While `faster-whisper` uses bundled PyAV for decoding, `pyannote.audio` requires an installed `ffmpeg` executable for speaker diarization.
+- Access to the [`pyannote/speaker-diarization-community-1`](https://huggingface.co/pyannote/speaker-diarization-community-1) model.
 - PostgreSQL with the [`pgvector`](https://github.com/pgvector/pgvector) extension installed. The migration enables the `vector` extension in the target database, so the database role must be allowed to create extensions.
 
 Create a PostgreSQL database for the application before continuing. For example:
@@ -15,7 +16,8 @@ CREATE DATABASE recording_search;
 
 ## Set environment variables
 
-The application reads configuration from shell environment variables. Set `DATABASE_URL` to your PostgreSQL database URL:
+The application reads configuration from shell environment variables. Set
+`DATABASE_URL` to your PostgreSQL database URL:
 
 ```bash
 export DATABASE_URL="postgresql://postgres:password@localhost:5432/recording_search"
@@ -27,6 +29,8 @@ Optional model and processing settings:
 export WHISPER_MODEL="small"
 export WHISPER_COMPUTE="int8"
 export WHISPER_DEVICE="cpu"
+export DIARIZATION_MODEL="pyannote/speaker-diarization-community-1"
+export DIARIZATION_DEVICE="cpu"
 export EMBEDDING_MODEL="BAAI/bge-base-en-v1.5"
 export CHUNK_TARGET_WORDS="200"
 ```

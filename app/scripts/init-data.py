@@ -22,6 +22,7 @@ from app.repositories.recordings import get_recording_filenames, insert_recordin
 from app.repositories.transcripts import insert_transcript
 
 from app.services.chunking import chunk_segments
+from app.services.diarization import diarize
 from app.services.embedding import embed_chunks
 from app.services.postgres import connect
 from app.services.transcription import generate_segments
@@ -40,6 +41,9 @@ def seed_dataset(
     print(f"Transcribing {filename}...")
     segments = list(generate_segments(str(dataset_path)))
 
+    print(f"Diarizing {filename}...")
+    speaker_turns = diarize(str(dataset_path))
+
     full_text = " ".join(
         segment.text.strip() for segment in segments if segment.text.strip()
     )
@@ -48,7 +52,7 @@ def seed_dataset(
     print(f"Inserted transcript for {filename}.")
 
     print(f"Generating chunks for {filename}...")
-    chunks = chunk_segments(segments)
+    chunks = chunk_segments(segments, speaker_turns)
     print(f"Generated {len(chunks)} chunks for {filename}.")
 
     if not chunks:
