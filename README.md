@@ -57,3 +57,15 @@ Process the bundled audio files, create transcript chunks and embeddings:
 ```bash
 python3 app/scripts/init-data.py
 ```
+
+## Start the application
+
+Use the master application entry point to start the application:
+
+```bash
+python3 -m app.main
+```
+
+This command verifies that ingestion has completed and searchable seed data is
+available. If ingestion is still pending, run `python3 app/scripts/init-data.py`
+before starting the application.
