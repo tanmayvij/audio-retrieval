@@ -39,7 +39,13 @@ def _get_pipeline() -> Any:
 
 def diarize(audio_file: str) -> list[SpeakerTurn]:
     """Return a normalized, exclusive two-speaker timeline for an audio file."""
-    output = _get_pipeline()(audio_file, num_speakers=_NUM_SPEAKERS)
+    import torchaudio
+
+    waveform, sample_rate = torchaudio.load(audio_file)
+    output = _get_pipeline()(
+        {"waveform": waveform, "sample_rate": sample_rate},
+        num_speakers=_NUM_SPEAKERS,
+    )
     annotation = output.exclusive_speaker_diarization
 
     raw_turns = sorted(
