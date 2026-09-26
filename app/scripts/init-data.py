@@ -18,7 +18,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from app.repositories.chunks import insert_chunks
-from app.repositories.recordings import insert_recording
+from app.repositories.recordings import get_recording_filenames, insert_recording
 from app.repositories.transcripts import insert_transcript
 
 from app.services.chunking import chunk_segments
@@ -67,18 +67,27 @@ def seed_dataset(
 
 
 def main() -> None:
-    """Seed every file in the datasets directory."""
+    """Seed files in the datasets directory that are not already recorded."""
     print("Initializing seed...")
-    datasets = sorted(
+    discovered_datasets = sorted(
         dataset_path
         for dataset_path in DATASETS_DIR.iterdir()
         if dataset_path.is_file()
     )
 
-    print(f"Found {len(datasets)} datasets to process.")
-
     connection = connect()
     try:
+        existing_filenames = get_recording_filenames(connection)
+        datasets = [
+            dataset_path
+            for dataset_path in discovered_datasets
+            if dataset_path.name not in existing_filenames
+        ]
+        print(
+            f"Found {len(discovered_datasets)} datasets; "
+            f"{len(datasets)} new datasets to process."
+        )
+
         recordings: list[tuple[UUID, Path]] = []
         for dataset_path in datasets:
             recording_id = insert_recording(connection, dataset_path.name)

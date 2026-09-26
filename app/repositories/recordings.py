@@ -2,10 +2,15 @@
 
 from uuid import UUID, uuid4
 
-from sqlalchemy import insert
+from sqlalchemy import insert, select
 from sqlalchemy.engine import Connection
 
 from app.models.recording import Recording
+
+
+def get_recording_filenames(connection: Connection) -> set[str]:
+    """Return the filenames already registered as recordings."""
+    return set(connection.execute(select(Recording.filename)).scalars())
 
 
 def insert_recording(connection: Connection, filename: str) -> UUID:
