@@ -16,6 +16,8 @@ ENV/
 
 # Test, type-checking, and coverage output
 .pytest_cache/
+evals/reports/
+evals/catalog.json
 .mypy_cache/
 .ruff_cache/
 .coverage

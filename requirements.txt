@@ -5,3 +5,4 @@ pyannote.audio>=4,<5
 psycopg[binary]>=3.1
 sentence-transformers
 SQLAlchemy>=2.0
+pytest>=8,<10

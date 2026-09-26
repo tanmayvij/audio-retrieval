@@ -1,0 +1,142 @@
+[
+  {
+    "id": "q01",
+    "query": "Why do private equity backed mineral buyers prefer large acreage deals over many small deals?",
+    "relevant_chunk_ids": ["ba00e25b-b65f-464e-bfb6-545c4e95a154"],
+    "category": "factual",
+    "relevance_note": "The opening explains deploying more capital in one transaction instead of hundreds of five-acre deals."
+  },
+  {
+    "id": "q02",
+    "query": "How does Parsity make money by paying landowners cash for their mineral rights?",
+    "relevant_chunk_ids": ["012008eb-073c-4717-b8c2-00a845454343", "17ab2484-c00a-4a2d-a2ba-7b31573cd081"],
+    "category": "topic",
+    "relevance_note": "Both chunks independently explain purchasing interests for cash today in exchange for future revenues."
+  },
+  {
+    "id": "q03",
+    "query": "What can happen if a gas company has not drilled a property by the end of its five-year lease?",
+    "relevant_chunk_ids": ["ed18f2ea-991c-4e5a-bcc0-bef40d58bad1"],
+    "category": "factual",
+    "relevance_note": "Explains the extension payment and additional five-year period, and negotiating away that provision."
+  },
+  {
+    "id": "q04",
+    "query": "Why does adapting old retirement-plan software to individual accounts create extra paperwork and manual work?",
+    "relevant_chunk_ids": ["19e8581e-4885-4d12-8085-c71b47431e6d"],
+    "category": "paraphrase",
+    "relevance_note": "Explains group-oriented legacy 401k platforms and the people-and-paper processes created when repurposing them."
+  },
+  {
+    "id": "q05",
+    "query": "Why did IRA Logix choose IRAs as its first market?",
+    "relevant_chunk_ids": ["7fae527e-2b5d-4cf4-a08f-1844967df2ca"],
+    "category": "factual",
+    "relevance_note": "Identifies the large aggregate IRA assets, fragmented underserved market, and technological bottleneck."
+  },
+  {
+    "id": "q06",
+    "query": "What pandemic-era payment and unemployment problems exposed failures in old financial infrastructure?",
+    "relevant_chunk_ids": ["6f623fc2-8cac-4a0a-98c4-2fb3f830ead1", "b0b08749-e063-4a3b-b773-02c8792bdc89"],
+    "category": "topic",
+    "relevance_note": "One passage covers backed-up unemployment claims; the other describes erroneous multimillion-dollar balances during relief payments."
+  },
+  {
+    "id": "q07",
+    "query": "What did the experiment tracking recyclable materials with cell phones reveal about where recycling travels?",
+    "relevant_chunk_ids": ["a6c2368b-1eea-470d-8ab3-2788cecfc3bf", "4a1b5044-5513-45a7-ab97-70d3c8e6f69d"],
+    "category": "factual",
+    "relevance_note": "The first describes the experiment and Seattle-to-China or Florida journeys; the overlapping continuation repeats those journeys and the effort of transporting the material."
+  },
+  {
+    "id": "q08",
+    "query": "What information were businesses missing when trying to manage their waste collection service?",
+    "relevant_chunk_ids": ["a6246923-9abb-44a4-a939-7610805bade5", "4a1b5044-5513-45a7-ab97-70d3c8e6f69d"],
+    "category": "topic",
+    "relevance_note": "Both passages list inaccessible pickup schedules, contracts, and rates."
+  },
+  {
+    "id": "q09",
+    "query": "How can measuring a trash compactor's electricity use determine when it should be emptied?",
+    "relevant_chunk_ids": ["fc1eb660-95fa-440c-ac1e-7b4363d4e131"],
+    "category": "paraphrase",
+    "relevance_note": "Explains the retrofit electrical sensor, motor effort, inferred container weight, and dynamic pickup scheduling."
+  },
+  {
+    "id": "q10",
+    "query": "Why are sensors on small fixed-route trash bins harder to justify economically than sensors on large compactors?",
+    "relevant_chunk_ids": ["beb46e8e-bf26-40b3-b25a-0f23b1444f2f"],
+    "category": "paraphrase",
+    "relevance_note": "Contrasts fixed collection routes with point-to-point trips hauling the entire large compactor."
+  },
+  {
+    "id": "q11",
+    "query": "Why did interviews with children who wanted to become YouTubers inspire Toasterpets to make cartoons?",
+    "relevant_chunk_ids": ["28015f88-f861-450a-befb-95e1bce546c6"],
+    "category": "factual",
+    "relevance_note": "Explains children's ambitions, parental restrictions, online exposure, and cartoons as a way to express themselves."
+  },
+  {
+    "id": "q12",
+    "query": "Why can changing just a few scenes in a traditional animated movie take months?",
+    "relevant_chunk_ids": ["7d041fd2-48bb-4b3f-8094-375cc81b3a3b", "7cbc02db-a1ed-46ca-a183-1e9ee9d10955"],
+    "category": "paraphrase",
+    "relevance_note": "Both overlapping passages describe costly animation rework and the five-month Spider-Man scene changes."
+  },
+  {
+    "id": "q13",
+    "query": "Which advances in phones and augmented reality made Toasterpets' cartoon creation technology possible?",
+    "relevant_chunk_ids": ["15de4b11-4351-4378-b4ec-21beaf18b322"],
+    "category": "topic",
+    "relevance_note": "Names smartphone processing for image recognition and growth in AR as the two technological enablers."
+  },
+  {
+    "id": "q14",
+    "query": "How did COE win back unhappy customers immediately after buying the furniture business out of bankruptcy?",
+    "relevant_chunk_ids": ["43f3b9ea-8e28-4bd2-8cc2-9080564b350a", "5e75a29d-70b8-4738-8e11-33350295d66e"],
+    "category": "paraphrase",
+    "relevance_note": "Both explain restoring inventory availability and fulfilling orders from day one to repair the customer experience."
+  },
+  {
+    "id": "q15",
+    "query": "How did COE's first three years of revenue compare with its original ten-million-dollar business plan?",
+    "relevant_chunk_ids": ["58e4d98b-f462-4983-b6f9-aa2fca2233fa"],
+    "category": "factual",
+    "relevance_note": "Gives the three-year $10 million target and actual yearly revenues of $9 million, $18 million, and $24 million."
+  },
+  {
+    "id": "q16",
+    "query": "What combination of people, products, and delivery service helped COE grow faster than the furniture market?",
+    "relevant_chunk_ids": ["ee932109-dc19-4b1d-8f02-c220290fe59e", "fabe591c-f60e-4e96-96a2-1104920eb5b0"],
+    "category": "topic",
+    "relevance_note": "The first identifies people, differentiated products, and service; the continuation specifies broad selection, deep stock, and immediate delivery."
+  },
+  {
+    "id": "q17",
+    "query": "How does listening help a coach turn a client's vague ideas into a clear message?",
+    "relevant_chunk_ids": ["b31e7ab1-5bb0-4700-89e1-cb0ace8d4ec9"],
+    "category": "paraphrase",
+    "relevance_note": "Explains probing for a niche, recognizing powerful statements, and reflecting the client's messaging back to them."
+  },
+  {
+    "id": "q18",
+    "query": "What different business models can a coach use to serve more clients without adding individual sessions?",
+    "relevant_chunk_ids": ["7f31e55f-5fec-46b7-a999-074725cab12c", "7dc37814-6d83-4fe5-8dbf-1fd5e3bf1bfe"],
+    "category": "topic",
+    "relevance_note": "The first lists groups, masterminds, trainer certification, and digital courses; the second discusses course launches and successful group/mastermind experiences."
+  },
+  {
+    "id": "q19",
+    "query": "Through which online platform did the Power Collective coach find her first coaching client?",
+    "relevant_chunk_ids": ["605dbb68-b15c-46bb-bbde-2342b855db9d", "5b2ff1f0-727d-40c0-9ad4-9fc90b177979"],
+    "category": "factual",
+    "relevance_note": "Both explicitly identify LinkedIn, with the longer passage explaining how reviews attracted the first paying business client."
+  },
+  {
+    "id": "q20",
+    "query": "How can group coaching help entrepreneurs feel less isolated and build personal relationships?",
+    "relevant_chunk_ids": ["7dc37814-6d83-4fe5-8dbf-1fd5e3bf1bfe", "b38e5018-2ca1-4705-9525-14937a219e8e"],
+    "category": "paraphrase",
+    "relevance_note": "Both describe connecting like-minded entrepreneurs; the continuation gives examples of participants attending each other's weddings and baby showers."
+  }
+]

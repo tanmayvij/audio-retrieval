@@ -99,3 +99,12 @@ vectors. The model is loaded once and reused during the interactive session.
 Exact phrase search does not load the embedding model: it matches a contiguous
 phrase, ignoring case and whitespace differences, while preserving punctuation
 and word forms and avoiding matches inside larger words.
+
+## Retrieval evaluations
+
+See [evals/README.md](evals/README.md) for labeling a fixed chunk corpus and running
+Recall@1, Recall@3, and Recall@5 evaluations for semantic and hybrid search.
+Run `python -m pytest` for lightweight tests.
+Live evaluations require labeled queries and an ingested database and run with
+`python -m pytest evals/ --run-evals -m eval -s`. Each mode must reach mean
+Recall@5 >= 0.80; detailed results are saved to `evals/reports/recall.json`.
