@@ -83,6 +83,19 @@ Use the master application entry point to start the application:
 python3 -m app.main
 ```
 
-This command verifies that ingestion has completed and searchable seed data is
+A pre-check verifies that ingestion has completed and searchable seed data is
 available. If ingestion is still pending, run `python3 app/scripts/init-data.py`
 before starting the application.
+
+After this check, select **Hybrid**, **Exact phrase**, or **Semantic**, then enter
+a search query. The application displays up to three results with recording ID,
+filename, speaker, transcript text, and chunk start/end timestamps, then returns
+to the menu. Select **0** to exit; Ctrl+C and end-of-input also exit cleanly.
+
+Hybrid search combines English full-text ranking and cosine similarity using
+reciprocal rank fusion. Semantic search finds related passages using BGE. Both
+require the same `EMBEDDING_MODEL` used during ingestion, producing 768-dimensional
+vectors. The model is loaded once and reused during the interactive session.
+Exact phrase search does not load the embedding model: it matches a contiguous
+phrase, ignoring case and whitespace differences, while preserving punctuation
+and word forms and avoiding matches inside larger words.

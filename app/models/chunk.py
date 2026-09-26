@@ -3,7 +3,8 @@
 from typing import Any
 from uuid import UUID, uuid4
 
-from sqlalchemy import ForeignKey, REAL, Text
+from sqlalchemy import Computed, ForeignKey, Index, REAL, Text
+from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import UserDefinedType
 
@@ -35,6 +36,7 @@ class Chunk(Base):
     """A timestamped transcript section and its search embedding."""
 
     __tablename__ = "chunks"
+    __table_args__ = (Index("ix_chunks_search_vector", "search_vector", postgresql_using="gin"),)
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     recording_id: Mapped[UUID] = mapped_column(
@@ -45,3 +47,7 @@ class Chunk(Base):
     text: Mapped[str] = mapped_column(Text, nullable=False)
     speaker: Mapped[str] = mapped_column(Text, nullable=False)
     embedding: Mapped[list[float] | None] = mapped_column(Vector(768))
+    search_vector: Mapped[str] = mapped_column(
+        TSVECTOR,
+        Computed("to_tsvector('english'::regconfig, text)", persisted=True),
+    )
