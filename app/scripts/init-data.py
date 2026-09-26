@@ -23,6 +23,7 @@ from app.repositories.transcripts import insert_transcript
 
 from app.services.chunking import chunk_segments
 from app.services.diarization import diarize
+from app.services.audio import get_duration_seconds
 from app.services.embedding import embed_chunks
 from app.services.postgres import connect
 from app.services.transcription import generate_segments
@@ -94,7 +95,10 @@ def main() -> None:
 
         recordings: list[tuple[UUID, Path]] = []
         for dataset_path in datasets:
-            recording_id = insert_recording(connection, dataset_path.name)
+            duration_seconds = get_duration_seconds(dataset_path)
+            recording_id = insert_recording(
+                connection, dataset_path.name, duration_seconds
+            )
             connection.commit()
             recordings.append((recording_id, dataset_path))
             print(f"Inserted recording for {dataset_path.name}.")
