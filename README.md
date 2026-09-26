@@ -5,7 +5,7 @@
 - Python 3.10 or newer
 - `pip`
 - `ffmpeg`. While `faster-whisper` uses bundled PyAV for decoding, `pyannote.audio` requires an installed `ffmpeg` executable for speaker diarization.
-- Access to the [`pyannote/speaker-diarization-community-1`](https://huggingface.co/pyannote/speaker-diarization-community-1) model.
+- Access to the protected [`pyannote/speaker-diarization-community-1`](https://huggingface.co/pyannote/speaker-diarization-community-1) model. Accept its user conditions and create a Hugging Face access token.
 - PostgreSQL with the [`pgvector`](https://github.com/pgvector/pgvector) extension installed. The migration enables the `vector` extension in the target database, so the database role must be allowed to create extensions.
 
 Create a PostgreSQL database for the application before continuing. For example:
@@ -17,10 +17,12 @@ CREATE DATABASE recording_search;
 ## Set environment variables
 
 The application reads configuration from shell environment variables. Set
-`DATABASE_URL` to your PostgreSQL database URL:
+`DATABASE_URL` and the Hugging Face token used to download the diarization
+model:
 
 ```bash
 export DATABASE_URL="postgresql://postgres:password@localhost:5432/recording_search"
+export HF_TOKEN="your-hugging-face-token"
 ```
 
 Optional model and processing settings:

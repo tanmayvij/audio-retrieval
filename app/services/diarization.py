@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any
 
-from app.config import DIARIZATION_DEVICE, DIARIZATION_MODEL
+from app.config import DIARIZATION_DEVICE, DIARIZATION_MODEL, HF_TOKEN
 
 
 _NUM_SPEAKERS = 2
@@ -21,10 +21,15 @@ class SpeakerTurn:
 
 @lru_cache(maxsize=1)
 def _get_pipeline() -> Any:
+    if not HF_TOKEN:
+        raise RuntimeError(
+            "HF_TOKEN must be configured for the protected pyannote model."
+        )
+
     import torch
     from pyannote.audio import Pipeline
 
-    pipeline = Pipeline.from_pretrained(DIARIZATION_MODEL)
+    pipeline = Pipeline.from_pretrained(DIARIZATION_MODEL, token=HF_TOKEN)
     if pipeline is None:
         raise RuntimeError(f"Unable to load diarization model: {DIARIZATION_MODEL}")
 
