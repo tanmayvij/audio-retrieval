@@ -14,6 +14,17 @@ Create a PostgreSQL database for the application before continuing. For example:
 CREATE DATABASE recording_search;
 ```
 
+If PostgreSQL is not installed locally, you can run it with Docker using the
+pgvector image:
+
+```bash
+docker run --name recording-search-db \
+  -e POSTGRES_PASSWORD=password \
+  -e POSTGRES_DB=recording_search \
+  -p 5432:5432 \
+  -d pgvector/pgvector:pg17
+```
+
 ## Set environment variables
 
 The application reads configuration from shell environment variables. Set
