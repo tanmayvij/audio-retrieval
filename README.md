@@ -1,4 +1,4 @@
-# Recording Search Setup
+# Audio-Retrieval Pipeline: Setup Instructions
 
 ## Prerequisites
 
